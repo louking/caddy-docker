@@ -33,7 +33,7 @@ PROJECT_NAME = 'caddy-docker'
 qualifiers = ['prod']
 
 @task
-def deploy(c, qualifier, branchname='master'):
+def deploy(c, qualifier, branchname='main'):
     if qualifier not in qualifiers:
         raise Exit(f'deploy qualifier parameter must be one of {qualifiers}')
         
