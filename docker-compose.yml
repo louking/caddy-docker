@@ -1,0 +1,32 @@
+services:
+  caddy:
+    image: louking/caddy:${APP_VER}
+    build:
+      dockerfile: Dockerfile
+    # user: "${CADDY_UID}:${CADDY_UID}"
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - $PWD/config:/etc/caddy
+      - $PWD/logs:/var/log/caddy
+      - $CADDY_DATA_HOST:/data
+      - $CADDY_CONFIG_HOST:/config
+    environment:
+      - DEBUG=${DEBUG:-false}
+      - CF_API_TOKEN=${CF_API_TOKEN}
+    extra_hosts:
+      # see https://stackoverflow.com/a/67158212/799921
+      - host.docker.internal:host-gateway
+    networks:
+      - backend-network
+
+networks:
+  backend-network:
+    name: caddy-backend-network
+    external: true
+
