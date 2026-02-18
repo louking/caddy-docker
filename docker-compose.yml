@@ -19,6 +19,8 @@ services:
     environment:
       - DEBUG=${DEBUG:-false}
       - CF_API_TOKEN=${CF_API_TOKEN}
+      - CADDY_UID=${CADDY_UID}
+      - CADDY_GID=${CADDY_GID}
     extra_hosts:
       # see https://stackoverflow.com/a/67158212/799921
       - host.docker.internal:host-gateway
