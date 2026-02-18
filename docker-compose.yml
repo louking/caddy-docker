@@ -3,7 +3,9 @@ services:
     image: louking/caddy:${APP_VER}
     build:
       dockerfile: Dockerfile
-    # user: "${CADDY_UID}:${CADDY_UID}"
+      args:
+        - CADDY_UID=${CADDY_UID}
+        - CADDY_GID=${CADDY_GID}
     restart: unless-stopped
     cap_add:
       - NET_ADMIN

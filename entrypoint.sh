@@ -2,14 +2,13 @@
 set -e
 set -x
 
-WWW_DIR="/var/log/caddy"
-
 echo "Setting permissions for $WWW_DIR to caddy:caddy (uid: ${CADDY_UID}, gid: ${CADDY_GID})"
 
 # 2. Change ownership and permissions
 # -R: Recursive for all files
-mkdir -p $WWW_DIR
-chown -R caddy:caddy $WWW_DIR
+mkdir -p /var/log/caddy
+chown -R caddy:caddy /var/log/caddy
+chown -R caddy:caddy "/data"
 
 # If DEBUG is unset or "false" (case-insensitive) -> run start_weewx.sh
 # Otherwise sleep forever.
