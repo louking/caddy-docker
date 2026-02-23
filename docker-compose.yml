@@ -27,10 +27,10 @@ services:
       # see https://stackoverflow.com/a/67158212/799921
       - host.docker.internal:host-gateway
     networks:
-      - backend-network
+      - caddy-backend-network
 
 networks:
-  backend-network:
+  caddy-backend-network:
     name: caddy-backend-network
     external: true
 
