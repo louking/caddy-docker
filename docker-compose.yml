@@ -6,7 +6,7 @@ services:
       args:
         - CADDY_UID=${CADDY_UID}
         - CADDY_GID=${CADDY_GID}
-    restart: unless-stopped
+    restart: always
     cap_add:
       - NET_ADMIN
     ports:
@@ -29,8 +29,27 @@ services:
     networks:
       - caddy-backend-network
 
+  certbot:
+    image: louking/caddy-certbot:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.certbot
+    restart: unless-stopped
+    volumes:
+      - letsencrypt:/etc/letsencrypt
+    environment:
+      - CLOUDFLARE_API_TOKEN=${CF_API_TOKEN}
+      - DO_API_TOKEN=${DO_API_TOKEN}
+      - DO_CDN_ENDPOINT_ID=${DO_CDN_ENDPOINT_ID}
+      - CDN_DOMAIN=${CDN_DOMAIN}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+      - CERTBOT_STAGING=${CERTBOT_STAGING:-false}
+
 networks:
   caddy-backend-network:
     name: caddy-backend-network
     external: true
+
+volumes:
+  letsencrypt:
 

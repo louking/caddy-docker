@@ -1,0 +1,11 @@
+FROM certbot/certbot:latest
+
+RUN pip install certbot-dns-cloudflare
+
+RUN apk add --no-cache bash curl jq
+
+COPY scripts/cdn-cert-entrypoint.sh /scripts/cdn-cert-entrypoint.sh
+COPY scripts/cdn-cert-upload.sh     /scripts/cdn-cert-upload.sh
+RUN chmod +x /scripts/cdn-cert-entrypoint.sh /scripts/cdn-cert-upload.sh
+
+ENTRYPOINT ["/scripts/cdn-cert-entrypoint.sh"]

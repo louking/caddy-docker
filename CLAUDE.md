@@ -66,7 +66,6 @@ The `certbot` service handles TLS certificates for the DigitalOcean CDN custom d
 
 - `scripts/cdn-cert-entrypoint.sh` — container entrypoint: obtains cert on first start, then loops every 12h running `certbot renew`
 - `scripts/cdn-cert-upload.sh` — uploads the current cert to DigitalOcean via API (also used as certbot's deploy hook)
-- `scripts/cdn-cert-init.sh` — local helper: validates `.env`, builds and pushes the certbot image, starts the service
 - `scripts/cdn-cert-renew.sh` — local helper: restarts the certbot container to trigger an immediate renewal check
 - `scripts/cdn-cert.env.example` — reference listing the required `.env` variables
 
