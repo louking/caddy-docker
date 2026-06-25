@@ -48,9 +48,13 @@ Fabric connects as `appuser` using the SSH key path in `fabric.json`. The deploy
 ## Configuration
 
 `config/Caddyfile` — active configuration (used in development; proxies to `*.localhost` addresses).  
-`config/Caddyfile.example` — production template with real domain names and Cloudflare TLS.
+`config/Caddyfile.example` — production template with anonymized domain names and Cloudflare TLS.
 
 The Caddyfile mounts into the container at `/etc/caddy`. To apply config changes without rebuilding: `docker compose restart` or use Caddy's API reload.
+
+**Note:** The production Caddyfile on the server (`~/caddy-prod/config/Caddyfile`) has diverged significantly from `Caddyfile.example` — it hosts many additional domains (loutilities.com, steeplechasers.org, scoretility.com, etc.) and is managed directly on the server, not deployed from this repo.
+
+`protocols h1 h2` is set explicitly in the global `servers` block to disable HTTP/3 (QUIC). Caddy enables HTTP/3 by default and advertises it via `Alt-Svc` headers; if a client's UDP/443 is blocked, this causes `ERR_QUIC_PROTOCOL_ERROR` on subsequent page loads even when the initial response succeeds. Cloudflare handles HTTP/3 at its own edge, so Caddy doesn't need it.
 
 ## Debug Mode
 

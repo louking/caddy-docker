@@ -147,7 +147,8 @@ venv.bak/
 # configuration and log files
 *.json
 *.cfg
-config/
+config/*
+!config/Caddyfile.example
 logs/
 caddy_data/
 caddy_config/

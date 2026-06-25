@@ -1,0 +1,81 @@
+(proxy_log_format) {
+    # need to use X-Forwarded-For if it exists -- see https://caddyserver.com/docs/caddyfile/matchers (remote_ip) and https://developers.cloudflare.com/support/troubleshooting/restoring-visitor-ips/restoring-original-visitor-ips/
+    format transform `{request>headers>X-Forwarded-For>[0]:request>remote_ip} - {user_id} [{ts}] "{request>method} {request>uri} {request>proto}" {status} {size} "{request>headers>Referer>[0]}" "{request>headers>User-Agent>[0]}"` {
+        time_format "02/Jan/2006:15:04:05 -0700"
+    }
+}
+
+(proxy_log_rotate) {
+    roll_size 10MB    # Rotate when log file reaches 10MB
+    roll_keep 2       # Keep 2 rotated log files
+    roll_keep_for 168h  # Keep rotated files for 7 days
+}
+
+{
+    servers {
+        protocols h1 h2
+        # https://caddy.community/t/trusted-proxies-with-cloudflare-my-solution/16124/6
+        trusted_proxies cloudflare {
+            interval 12h
+            timeout 15s
+        }
+
+        client_ip_headers Cf-Connecting-Ip X-Forwarded-For X-Real-IP
+    }
+
+    log default {
+        format console
+        output file /var/log/caddy/caddy.log
+    }
+}
+
+service1.example.com {
+    tls {
+        dns cloudflare {env.CF_API_TOKEN}
+    }
+    log {
+        import proxy_log_format
+        output file /var/log/caddy/service1.example.com/access.log {
+            import proxy_log_rotate
+        }
+    }
+
+    reverse_proxy host.docker.internal:8080
+}
+
+service1-alt.example.com {
+    redir https://service1.example.com{uri}
+}
+
+www.example.com {
+    tls {
+        dns cloudflare {env.CF_API_TOKEN}
+    }
+    log {
+        import proxy_log_format
+        output file /var/log/caddy/www.example.com/access.log {
+            import proxy_log_rotate
+        }
+    }
+
+    reverse_proxy host.docker.internal:8081
+}
+
+example.com {
+    redir https://www.example.com{uri}
+}
+
+# Catch-all site block for unknown hosts
+# This address (https://) is very unspecific and will catch requests not matched
+# by the above hostnames on the HTTPS port (443).
+# see https://gemini.google.com/share/4775da3f299e
+https:// {
+    # Log the request before rejecting
+    log {
+        import proxy_log_format
+        output file /var/log/caddy/unknown_hosts/access.log
+    }
+
+    # Reject the request with a 403 Forbidden status
+    respond "Access Denied: Unknown Host" 403
+}
