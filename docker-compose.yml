@@ -18,6 +18,7 @@ services:
       - $CADDY_LOG_HOST:/var/log/caddy
       - $CADDY_DATA_HOST:/data
       - $CADDY_CONFIG_HOST:/config
+      - $FSRC_TECH_WWW_HOST:/var/www/fsrc-tech
     environment:
       - DEBUG=${DEBUG:-false}
       - CF_API_TOKEN=${CF_API_TOKEN}
