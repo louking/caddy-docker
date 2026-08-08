@@ -81,5 +81,6 @@ Set `CERTBOT_STAGING=true` in `.env` to test without hitting Let's Encrypt rate 
 ## Architecture Notes
 
 - Backend services are reached via `host.docker.internal` (mapped to host gateway). The dev Caddyfile routes `members.localhost → :8002`, `routes.localhost → :8005`, `scores.localhost → :8004`, `contracts.localhost → :8003`, `tmsim.localhost → :8080`, `logmon.localhost → :8100`.
+- `fsrc-tech.localhost` serves the `fsrc-tech` wiki as static files (`file_server` on `/var/www/fsrc-tech/site`), not proxied — `FSRC_TECH_WWW_HOST` in `.env` bind-mounts that sibling repo's working directory straight into the container at `/var/www/fsrc-tech`.
 - Logs are rotated at 10 MB, keeping 2 files for up to 7 days, written to `./logs/` on the host.
 - The container runs as the `caddy` user (not root); `entrypoint.sh` uses `su-exec` to drop privileges after fixing ownership of `/var/log/caddy` and `/data`.

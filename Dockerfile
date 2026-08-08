@@ -25,6 +25,7 @@ RUN deluser caddy || true && \
 
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
 COPY ./entrypoint.sh ./
+RUN chmod +x ./entrypoint.sh
 
 ENTRYPOINT ["./entrypoint.sh"]
 
